@@ -21,12 +21,12 @@ func Fortune() chan FortuneRequest {
 		stdoutPipe ,e := cmd.StdoutPipe()
 
 		if e != nil {
-			log.Fatal(e)
+			log.Println(e)
 		}
 
 		e = cmd.Start()
 		if e != nil {
-			log.Fatal(e)
+			log.Println(e)
 		}
 
 
@@ -38,13 +38,28 @@ func Fortune() chan FortuneRequest {
 			if e == io.EOF {
 				break
 			} else if e != nil {
-				log.Fatal(e)
+				log.Println(e)
 			}
 			str = str + string(buf[0:size])
 		}
 		inputReq.Retc <- str
 
 	}
+	} ()
+	return retc
+}
+
+func FortuneStream(args string) chan string {
+	retc := make(chan string, 10)
+	go func() {
+		fortuneReq := FortuneRequest{FortuneOpts:args, Retc:retc}
+		reqc := Fortune()
+		defer close(reqc)
+		defer close(retc)
+
+		for {
+			reqc <- fortuneReq
+		}
 	} ()
 	return retc
 }
