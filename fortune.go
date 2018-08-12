@@ -12,6 +12,22 @@ type FortuneRequest struct {
 	Retc chan string
 }
 
+func escape(str string) string {
+	str2 := ""
+	for x := 0 ; x < len(str) ; x ++ {
+		if str[x] == ';' {
+			str2 = str2 + "\\;"
+		} else if str[x] == '$' {
+			str2 = str2 + "\\$"
+		} else if str[x] == '`' {
+			str2 = str2 + "\\`"
+		} else {
+			str2 = str2 + string(str[x])
+		}
+	}
+	return str2
+}
+
 // Fortune() returns a channel which can be used to send fortune requests.
 func Fortune() chan FortuneRequest {
 	retc := make (chan FortuneRequest, 100)
@@ -21,7 +37,7 @@ func Fortune() chan FortuneRequest {
 		if !ok {
 			return
 		}
-		cmd := Command("sh", "-c", "fortune " + inputReq.FortuneOpts)
+		cmd := Command("sh", "-c", "fortune " + escape(inputReq.FortuneOpts))
 		stdoutPipe ,e := cmd.StdoutPipe()
 
 		if e != nil {
