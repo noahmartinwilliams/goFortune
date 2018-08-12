@@ -21,6 +21,8 @@ func escape(str string) string {
 			str2 = str2 + "\\$"
 		} else if str[x] == '`' {
 			str2 = str2 + "\\`"
+		} else if str[x] == '>' {
+			str2 = str2 + "\\>"
 		} else {
 			str2 = str2 + string(str[x])
 		}
